@@ -1,4 +1,8 @@
 {
   "name": "RouteWise",
-  "slug": "RouteWise"
+  "slug": "RouteWise",
+  "newArchEnabled": true
+ 
 }
+
+
