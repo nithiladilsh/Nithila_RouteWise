@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the eye icon
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function SignUpScreen() {
   const [username, setUsername] = useState('');
@@ -27,6 +27,13 @@ export default function SignUpScreen() {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
+  // Success states for each field
+  const [usernameSuccess, setUsernameSuccess] = useState('');
+  const [emailSuccess, setEmailSuccess] = useState('');
+  const [phoneSuccess, setPhoneSuccess] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [confirmPasswordSuccess, setConfirmPasswordSuccess] = useState('');
+
   // Focus state variables
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
@@ -38,7 +45,7 @@ export default function SignUpScreen() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
-  const navigation = useNavigation(); // For navigation between screens
+  const navigation = useNavigation();
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,47 +53,78 @@ export default function SignUpScreen() {
   };
 
   const validatePhone = (phone) => {
-    const phoneRegex = /^\d{10}$/; // Accepts only 10-digit numbers
+    const phoneRegex = /^\d{10}$/;
     return phoneRegex.test(phone);
   };
 
   const handleSignUp = () => {
     let valid = true;
-
-    // Reset error messages
+  
+    // Reset error and success messages
     setUsernameError('');
     setEmailError('');
     setPhoneError('');
     setPasswordError('');
     setConfirmPasswordError('');
-
-    // Validate fields
+    setUsernameSuccess('');
+    setEmailSuccess('');
+    setPhoneSuccess('');
+    setPasswordSuccess('');
+    setConfirmPasswordSuccess('');
+  
+    // Validate fields and set success/error messages
     if (!username) {
       setUsernameError('Username is required');
       valid = false;
+    } else {
+      setUsernameSuccess('Valid username');
     }
+  
     if (!email || !validateEmail(email)) {
       setEmailError('Invalid email address');
       valid = false;
+    } if (!email){
+      setEmailError('Email is required')  
+    } if (validateEmail(email)) {
+      setEmailSuccess('Valid email address');
     }
+  
     if (!phone || !validatePhone(phone)) {
       setPhoneError('Invalid phone number');
       valid = false;
+    } if(!phone){
+        setPhoneError('Phone number is required');
+    } if(validatePhone(phone)) {
+      setPhoneSuccess('Valid phone number');
     }
+
+  
     if (!password) {
       setPasswordError('Password is required');
       valid = false;
+    }  if (password.length < 6 || password.length > 12) {
+        setPasswordError('Password must be between 6 and 12 characters');
+        valid = false;
+      } 
+    else {
+      setPasswordSuccess('Valid password');
     }
+  
+    // First, check password match before setting success/error messages
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       valid = false;
-    }
+    }  if (!password) {
+        setPasswordError('Please enter a password');
+        valid = false;
+    }    
 
     if (valid) {
       Alert.alert('Success', 'Account created successfully!');
-      navigation.navigate('Login'); // Navigate back to LoginScreen
+      navigation.navigate('Login');
     }
   };
+  
 
   return (
     <KeyboardAvoidingView
@@ -99,11 +137,12 @@ export default function SignUpScreen() {
         {/* Username Input */}
         <View style={styles.inputContainer}>
           {usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
+          {usernameSuccess && <Text style={styles.successText}>{usernameSuccess}</Text>}
           <TextInput
             style={[
               styles.input,
-              isFocusedUsername && styles.inputFocused, // Apply focused style
-              usernameError && styles.errorInput, // Apply error style
+              isFocusedUsername && styles.inputFocused,
+              usernameError && styles.errorInput,
             ]}
             placeholder="Username"
             placeholderTextColor="#ccc"
@@ -118,11 +157,12 @@ export default function SignUpScreen() {
         {/* Email Input */}
         <View style={styles.inputContainer}>
           {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+          {emailSuccess && <Text style={styles.successText}>{emailSuccess}</Text>}
           <TextInput
             style={[
               styles.input,
-              isFocusedEmail && styles.inputFocused, // Apply focused style
-              emailError && styles.errorInput, // Apply error style
+              isFocusedEmail && styles.inputFocused,
+              emailError && styles.errorInput,
             ]}
             placeholder="Email"
             placeholderTextColor="#ccc"
@@ -138,11 +178,12 @@ export default function SignUpScreen() {
         {/* Phone Number Input */}
         <View style={styles.inputContainer}>
           {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
+          {phoneSuccess && <Text style={styles.successText}>{phoneSuccess}</Text>}
           <TextInput
             style={[
               styles.input,
-              isFocusedPhone && styles.inputFocused, // Apply focused style
-              phoneError && styles.errorInput, // Apply error style
+              isFocusedPhone && styles.inputFocused,
+              phoneError && styles.errorInput,
             ]}
             placeholder="Phone Number"
             placeholderTextColor="#ccc"
@@ -154,14 +195,15 @@ export default function SignUpScreen() {
           />
         </View>
 
-        {/* Password Input */}
-        <View style={styles.inputContainer}>
+{/* Password Input */}
+<View style={styles.inputContainer}>
           {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+          {passwordSuccess && <Text style={styles.successText}>{passwordSuccess}</Text>}
           <TextInput
             style={[
               styles.input,
-              isFocusedPassword && styles.inputFocused, // Apply focused style
-              passwordError && styles.errorInput, // Apply error style
+              isFocusedPassword && styles.inputFocused,
+              passwordError && styles.errorInput,
             ]}
             placeholder="Password"
             placeholderTextColor="#ccc"
@@ -186,11 +228,12 @@ export default function SignUpScreen() {
         {/* Confirm Password Input */}
         <View style={styles.inputContainer}>
           {confirmPasswordError && <Text style={styles.errorText}>{confirmPasswordError}</Text>}
+          {confirmPasswordSuccess && <Text style={styles.successText}>{confirmPasswordSuccess}</Text>}
           <TextInput
             style={[
               styles.input,
-              isFocusedConfirmPassword && styles.inputFocused, // Apply focused style
-              confirmPasswordError && styles.errorInput, // Apply error style
+              isFocusedConfirmPassword && styles.inputFocused,
+              confirmPasswordError && styles.errorInput,
             ]}
             placeholder="Confirm Password"
             placeholderTextColor="#ccc"
@@ -212,6 +255,8 @@ export default function SignUpScreen() {
           </TouchableOpacity>
         </View>
 
+
+
         {/* Sign Up Button */}
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Sign Up</Text>
@@ -220,10 +265,7 @@ export default function SignUpScreen() {
         {/* Already have an account? */}
         <Text style={styles.footerText}>
           Already have an account?{' '}
-          <Text
-            style={styles.loginText}
-            onPress={() => navigation.navigate('Login')}
-          >
+          <Text style={styles.loginText} onPress={() => navigation.navigate('Login')}>
             Login
           </Text>
         </Text>
@@ -232,79 +274,97 @@ export default function SignUpScreen() {
   );
 }
 
+
+
+
+
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#2D343C',
-    justifyContent: 'center', // Center vertically
-    alignItems: 'center', // Center horizontally
-    padding: 20,
-  },
-  keyboardContainer: {
-    flex: 1,
-    backgroundColor: '#2D343C',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 20, // Add space at the bottom to prevent input fields from being too close to the keyboard
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 30,
-    letterSpacing: 1,
-  },
-  inputContainer: {
-    width: '90%',
-    marginBottom: 20,
-    position: 'relative', // Allows positioning of the icon inside the input field
-  },
-  input: {
-    height: 50,
-    backgroundColor: '#40444F',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingRight: 40, // Provide space for the eye icon
-    fontSize: 16,
-    color: '#fff',
-    borderWidth: 1,
-    borderColor: '#40444F', // Default border color matching background
-  },
-  inputFocused: {
-    borderColor: '#FF8C00', // White border when focused
-  },
-  errorInput: {
-    borderColor: '#FF5252', // Red border for error
-  },
-  eyeIcon: {
-    position: 'absolute',
-    right: 10,
-    top: '50%',
-    transform: [{ translateY: -12 }],
-  },
-  button: {
-    width: '90%',
-    height: 50,
-    backgroundColor: '#FF8C00',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  footerText: {
-    marginTop: 20,
-    color: '#FFFFFF',
-    fontSize: 14,
-  },
-  loginText: {
-    color: '#FF8C00', // Highlight color for login
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: '#2D343C',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+    keyboardContainer: {
+      flex: 1,
+      backgroundColor: '#2D343C',
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingBottom: 20, // Add space at the bottom to prevent input fields from being too close to the keyboard
+    },
+    title: {
+      fontSize: 40,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+      marginBottom: 30,
+      letterSpacing: 1,
+    },
+    inputContainer: {
+      width: '90%',
+      marginBottom: 20,
+      position: 'relative',
+    },
+    input: {
+      height: 50,
+      backgroundColor: '#40444F',
+      borderRadius: 8,
+      paddingHorizontal: 15,
+      paddingRight: 40,
+      fontSize: 16,
+      color: '#fff',
+      borderWidth: 1,
+      borderColor: '#40444F',
+      flex: 1,
+    },
+    inputFocused: {
+      borderColor: '#FF8C00',
+    },
+    errorInput: {
+      borderColor: '#FF5252', // Red border for error
+    },
+    eyeIcon: {
+        position: 'absolute',
+        right: 10,
+        top: '50%',
+        transform: [{ translateY: -12 }],
+      },
+
+    button: {
+      width: '90%',
+      height: 50,
+      backgroundColor: '#FF8C00',
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 10,
+    },
+    buttonText: {
+      color: '#FFFFFF',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    footerText: {
+      marginTop: 20,
+      color: '#FFFFFF',
+      fontSize: 14,
+    },
+    loginText: {
+      color: '#FF8C00',
+    },
+    errorText: {
+      color: '#FF5252', // Red color for error messages
+      fontSize: 14,
+      marginBottom: 5,
+    },
+    successText: {
+        color: '#28a745', // Green color for success messages
+        fontSize: 14,
+        marginBottom: 5,
+    },
+  });
+  

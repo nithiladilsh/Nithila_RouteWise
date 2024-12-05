@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 export default function HomeScreen({ route }) {
   const { username } = route.params; // Get the username from route parameters
   const navigation = useNavigation();
-  const [isImageVisible, setIsImageVisible] = useState(false); // State to toggle image visibility
+  const [isImageVisible, setIsImageVisible] = useState(false); // State to control modal visibility
 
   const handleLogout = () => {
     Alert.alert(
@@ -25,7 +25,7 @@ export default function HomeScreen({ route }) {
   };
 
   const toggleImageVisibility = () => {
-    setIsImageVisible(!isImageVisible); // Toggle the image visibility
+    setIsImageVisible(!isImageVisible); // Toggle the modal visibility
   };
 
   return (
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15, // Reduced padding for a more compact look
     borderBottomWidth: 1, // Add a subtle border at the bottom of the header for emphasis
     borderBottomColor: '#FF8C00', // Accent color from your theme
+    height: 80,
   },
   appName: {
     fontSize: 24, // Reduced font size for a more elegant look
