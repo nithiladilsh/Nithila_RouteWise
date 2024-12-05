@@ -8,6 +8,9 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,70 +25,75 @@ export default function LoginScreen() {
   const handleLogin = () => {
     if (username === 'Nithila' && password === 'nithila123') {
       setErrorMessage('');
-      navigation.navigate('Home', {username: username});  // Navigate to Home screen after successful login
+      navigation.navigate('Home', { username: username });  // Navigate to Home screen after successful login
     } else {
       setErrorMessage('Invalid username or password');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" backgroundColor="#2D343C" />
-      <Image
-        source={require('../assets/images/carlogin.png')} // Replace with your image path
-        style={styles.image}
-      />
-      <Text style={styles.title}>RouteWise</Text>
+    <KeyboardAvoidingView
+      style={styles.keyboardContainer}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <StatusBar style="light" backgroundColor="#2D343C" />
+        <Image
+          source={require('../assets/images/carlogin.png')} // Replace with your image path
+          style={styles.image}
+        />
+        <Text style={styles.title}>RouteWise</Text>
 
-      {/* Username Input */}
-      <TextInput
-        style={[
-          styles.input,
-          isFocusedUsername && styles.inputFocused,  // Apply white border when focused
-        ]}
-        placeholder="Username"
-        placeholderTextColor="#ccc"
-        onChangeText={(text) => setUsername(text)}
-        value={username}
-        onFocus={() => setIsFocusedUsername(true)}
-        onBlur={() => setIsFocusedUsername(false)}
-        autoCapitalize="none"
-      />
+        {/* Username Input */}
+        <TextInput
+          style={[
+            styles.input,
+            isFocusedUsername && styles.inputFocused, // Apply white border when focused
+          ]}
+          placeholder="Username"
+          placeholderTextColor="#ccc"
+          onChangeText={(text) => setUsername(text)}
+          value={username}
+          onFocus={() => setIsFocusedUsername(true)}
+          onBlur={() => setIsFocusedUsername(false)}
+          autoCapitalize="none"
+        />
 
-      {/* Password Input */}
-      <TextInput
-        style={[
-          styles.input,
-          isFocusedPassword && styles.inputFocused,  // Apply white border when focused
-        ]}
-        placeholder="Password"
-        placeholderTextColor="#ccc"
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        onFocus={() => setIsFocusedPassword(true)}
-        onBlur={() => setIsFocusedPassword(false)}
-        secureTextEntry
-      />
+        {/* Password Input */}
+        <TextInput
+          style={[
+            styles.input,
+            isFocusedPassword && styles.inputFocused, // Apply white border when focused
+          ]}
+          placeholder="Password"
+          placeholderTextColor="#ccc"
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          onFocus={() => setIsFocusedPassword(true)}
+          onBlur={() => setIsFocusedPassword(false)}
+          secureTextEntry
+        />
 
-      {/* Error Message */}
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+        {/* Error Message */}
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
-      {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+        {/* Login Button */}
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
 
-      {/* Sign Up Link */}
-      <Text style={styles.footerText}>
-        Don't have an account?{' '}
-        <Text
-          style={styles.signUpText}
-          onPress={() => navigation.navigate('SignUp')}
-        >
-          Sign Up
+        {/* Sign Up Link */}
+        <Text style={styles.footerText}>
+          Don't have an account?{' '}
+          <Text
+            style={styles.signUpText}
+            onPress={() => navigation.navigate('SignUp')}
+          >
+            Sign Up
+          </Text>
         </Text>
-      </Text>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -96,6 +104,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 100,
+  },
+  keyboardContainer: {
+    flex: 1,
+    backgroundColor: '#2D343C',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 20, // Add space at the bottom to prevent input fields from being too close to the keyboard
   },
   image: {
     width: 270,
@@ -120,10 +138,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 20,
     borderWidth: 1,
-    borderColor: '#50575E',  // Default border color
+    borderColor: '#50575E', // Default border color
   },
   inputFocused: {
-    borderColor: '#FFFFFF',  // White border when focused
+    borderColor: '#FF8C00', // White border when focused
   },
   errorText: {
     color: '#FF5252',
