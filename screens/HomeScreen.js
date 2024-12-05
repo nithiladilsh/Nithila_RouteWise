@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { setItemCount } from './Store';
+import { setItemCount } from './Store'; // Importing the action to set item count
 
 export default function HomeScreen({ route }) {
   const { username } = route.params;
@@ -15,6 +15,9 @@ export default function HomeScreen({ route }) {
   const [isImageVisible, setIsImageVisible] = useState(false);
 
   useEffect(() => {
+    // Reset item count to 0 on login
+    dispatch(setItemCount(0)); // Dispatch action to set item count to 0
+
     const fetchData = async () => {
       try {
         const response = await fetch('https://6751ed40d1983b9597b4d821.mockapi.io/Cars');
@@ -28,7 +31,7 @@ export default function HomeScreen({ route }) {
     };
 
     fetchData();
-  }, []);
+  }, [dispatch]); // Empty dependency array ensures this only runs on initial mount
 
   const handleLogout = () => {
     Alert.alert(
@@ -52,10 +55,10 @@ export default function HomeScreen({ route }) {
     let newSelectedItems;
     if (selectedItems.includes(id)) {
       newSelectedItems = selectedItems.filter((item) => item !== id);
-      dispatch(setItemCount(itemCount - 1));
+      dispatch(setItemCount(itemCount - 1)); // Decrease count when item is deselected
     } else {
       newSelectedItems = [...selectedItems, id];
-      dispatch(setItemCount(itemCount + 1));
+      dispatch(setItemCount(itemCount + 1)); // Increase count when item is selected
     }
     setSelectedItems(newSelectedItems);
   };
