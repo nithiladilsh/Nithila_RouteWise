@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux'; // Importing useDispatch and useSelector
-
+import { useDispatch, useSelector } from 'react-redux';
 import { setItemCount } from './Store';
 
 export default function HomeScreen({ route }) {
-  const { username } = route.params; // Get username from route parameters
+  const { username } = route.params;
   const navigation = useNavigation();
-  const dispatch = useDispatch(); // Get the dispatch function from Redux
-  const itemCount = useSelector(state => state.itemCount.itemCount); // Get itemCount from Redux store
+  const dispatch = useDispatch();
+  const itemCount = useSelector(state => state.itemCount.itemCount);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedItems, setSelectedItems] = useState([]); // State for selected items
-  const [isImageVisible, setIsImageVisible] = useState(false); // State to control modal visibility
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [isImageVisible, setIsImageVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,53 +35,57 @@ export default function HomeScreen({ route }) {
       "Confirm Logout",
       "Are you sure you want to log out?",
       [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         {
           text: "Yes",
-          onPress: () => navigation.navigate('Login'), // Navigate to LoginScreen
+          onPress: () => navigation.navigate('Login'),
         },
       ]
     );
   };
 
   const toggleImageVisibility = () => {
-    setIsImageVisible(!isImageVisible); // Toggle the modal visibility
+    setIsImageVisible(!isImageVisible);
   };
 
   const handleSelectItem = (id) => {
     let newSelectedItems;
     if (selectedItems.includes(id)) {
-      newSelectedItems = selectedItems.filter((item) => item !== id); // Unselect item
-      dispatch(setItemCount(itemCount - 1)); // Decrease count
+      newSelectedItems = selectedItems.filter((item) => item !== id);
+      dispatch(setItemCount(itemCount - 1));
     } else {
-      newSelectedItems = [...selectedItems, id]; // Add item to selection
-      dispatch(setItemCount(itemCount + 1)); // Increase count
+      newSelectedItems = [...selectedItems, id];
+      dispatch(setItemCount(itemCount + 1));
     }
     setSelectedItems(newSelectedItems);
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={[
+        styles.card,
+        selectedItems.includes(item.id) && styles.selectedCard // Add conditional style here
+      ]}
+      onPress={() => handleSelectItem(item.id)}
+    >
       <Image source={{ uri: item.image }} style={styles.cardImage} />
-      {/* Checkbox Overlay */}
-      <TouchableOpacity
-        style={styles.checkboxContainer}
-        onPress={() => handleSelectItem(item.id)}
-      >
-        <View
-          style={[
-            styles.checkbox,
-            selectedItems.includes(item.id) && styles.checkboxSelected,
-          ]}
+      {selectedItems.includes(item.id) && (
+        <TouchableOpacity
+          style={styles.checkboxContainer}
+          onPress={() => handleSelectItem(item.id)}
         >
-          {selectedItems.includes(item.id) && (
-            <Text style={styles.checkboxTick}>✔</Text> // Add a tick mark
-          )}
-        </View>
-      </TouchableOpacity>
+          <View
+            style={[
+              styles.checkbox,
+              selectedItems.includes(item.id) && styles.checkboxSelected,
+            ]}
+          >
+            {selectedItems.includes(item.id) && (
+              <Text style={styles.checkboxTick}>✔</Text>
+            )}
+          </View>
+        </TouchableOpacity>
+      )}
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardDescription} numberOfLines={2}>
@@ -92,41 +95,39 @@ export default function HomeScreen({ route }) {
           {item.status}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
     return (
       <View style={styles.loader}>
         <ActivityIndicator size="large" color="#FF8C00" />
-        <Text>Loading...</Text>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Custom Header */}
       <View style={styles.header}>
         <Text style={styles.appName}>RouteWise</Text>
         <View style={styles.profileContainer}>
           <TouchableOpacity onPress={toggleImageVisibility}>
             <Image
-              source={require('../assets/images/output-onlinepngtools (3).png')} // Your profile icon image
+              source={require('../assets/images/output-onlinepngtools (3).png')}
               style={styles.profileIcon}
             />
           </TouchableOpacity>
           <Text style={styles.username}>{username}</Text>
           <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
             <Image
-              source={require('../assets/images/logout-image.png')} // Your logout icon image
+              source={require('../assets/images/logout-image.png')}
               style={styles.logoutIcon}
             />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Modal for Profile Image */}
       {isImageVisible && (
         <Modal
           transparent={true}
@@ -138,7 +139,7 @@ export default function HomeScreen({ route }) {
             <View style={styles.modalContent}>
               <TouchableOpacity onPress={toggleImageVisibility}>
                 <Image
-                  source={require('../assets/images/output-onlinepngtools (3).png')} // Larger profile image
+                  source={require('../assets/images/output-onlinepngtools (3).png')}
                   style={styles.largeProfileImage}
                 />
               </TouchableOpacity>
@@ -147,7 +148,6 @@ export default function HomeScreen({ route }) {
         </Modal>
       )}
 
-      {/* Item List */}
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -155,10 +155,9 @@ export default function HomeScreen({ route }) {
         contentContainerStyle={styles.listContainer}
       />
 
-      {/* Floating Button */}
       <TouchableOpacity
         style={styles.floatingButton}
-        onPress={() => console.log('Count:', itemCount)} // Just logging count, you can handle it as per your requirement
+        onPress={() => console.log('Count:', itemCount)}
       >
         <Text style={styles.floatingButtonText}>{itemCount} Items Selected</Text>
       </TouchableOpacity>
@@ -181,27 +180,31 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#FF8C00',
     height: 80,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   appName: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#FF8C00',
-    letterSpacing: 2,
+    letterSpacing: 1.5,
   },
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   profileIcon: {
-    width: 35,
-    height: 35,
-    borderRadius: 17.5,
-    marginRight: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 15,
     borderWidth: 2,
     borderColor: '#FF8C00',
   },
   username: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
@@ -218,7 +221,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   modalContent: {
     backgroundColor: '#fff',
@@ -227,28 +230,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   largeProfileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
   },
   listContainer: {
-    padding: 10,
+    padding: 15,
+    marginBottom: 70,
   },
   card: {
     backgroundColor: '#2D343C',
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 15,
     overflow: 'hidden',
-    elevation: 5,
+    elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
     position: 'relative',
+  },
+  selectedCard: {
+    borderWidth: 3,
+    borderColor: '#FF8C00', // Thin yellow border when selected
   },
   cardImage: {
     width: '100%',
-    height: 150,
+    height: 180,
+    borderBottomWidth: 4,
+    borderBottomColor: '#FF8C00',
   },
   checkboxContainer: {
     position: 'absolute',
@@ -257,12 +267,12 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderWidth: 2,
+    width: 26,
+    height: 26,
+    borderWidth: 3,
     borderColor: '#FF8C00',
     backgroundColor: 'transparent',
-    borderRadius: 4,
+    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -271,29 +281,29 @@ const styles = StyleSheet.create({
   },
   checkboxTick: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   cardContent: {
-    padding: 15,
+    padding: 20,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#FF8C00',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   cardDescription: {
     fontSize: 14,
     color: '#F1F2F6',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   statusTag: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 15,
     borderRadius: 5,
     alignSelf: 'flex-start',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
@@ -308,20 +318,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#FF8C00',
+  },
   floatingButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
     backgroundColor: '#FF8C00',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 30,
-    elevation: 5,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 35,
+    elevation: 6,
   },
   floatingButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });
