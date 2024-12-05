@@ -6,6 +6,8 @@ import LoginScreen from './screens/LoginScreen';
 import Signupscreen from './screens/Signupscreen';
 import HomeScreen from './screens/HomeScreen';
 import { enableScreens } from 'react-native-screens';
+import { Provider } from 'react-redux'; // Import the Provider from react-redux
+import store from './screens/Store';
 
 enableScreens();
 
@@ -13,6 +15,7 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+    <Provider store ={store}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false}}>
         <Stack.Screen name = "Login" component={LoginScreen} />
@@ -20,6 +23,7 @@ function App() {
         <Stack.Screen name = "Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 }
 
