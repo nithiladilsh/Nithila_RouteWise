@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +13,9 @@ export default function HomeScreen({ route }) {
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isImageVisible, setIsImageVisible] = useState(false);
+
+  // Reference to the FlatList for scrolling
+  const flatListRef = useRef(null);
 
   useEffect(() => {
     // Reset item count to 0 on login
@@ -31,7 +34,7 @@ export default function HomeScreen({ route }) {
     };
 
     fetchData();
-  }, [dispatch]); // Empty dependency array ensures this only runs on initial mount
+  }, [dispatch]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -63,12 +66,17 @@ export default function HomeScreen({ route }) {
     setSelectedItems(newSelectedItems);
   };
 
+  // Function to handle Home button press
+  const handleHomeButtonPress = () => {
+    if (flatListRef.current) {
+      // Scroll to the first item card
+      flatListRef.current.scrollToIndex({ index: 0, animated: true });
+    }
+  };
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={[
-        styles.card,
-        selectedItems.includes(item.id) && styles.selectedCard // Add conditional style here
-      ]}
+      style={[styles.card, selectedItems.includes(item.id) && styles.selectedCard]} // Add conditional style here
       onPress={() => handleSelectItem(item.id)}
     >
       <Image source={{ uri: item.image }} style={styles.cardImage} />
@@ -78,10 +86,7 @@ export default function HomeScreen({ route }) {
           onPress={() => handleSelectItem(item.id)}
         >
           <View
-            style={[
-              styles.checkbox,
-              selectedItems.includes(item.id) && styles.checkboxSelected,
-            ]}
+            style={[styles.checkbox, selectedItems.includes(item.id) && styles.checkboxSelected]}
           >
             {selectedItems.includes(item.id) && (
               <Text style={styles.checkboxTick}>✔</Text>
@@ -117,7 +122,7 @@ export default function HomeScreen({ route }) {
         <View style={styles.profileContainer}>
           <TouchableOpacity onPress={toggleImageVisibility}>
             <Image
-              source={require('../assets/images/output-onlinepngtools (3).png')}
+              source={require('../assets/images/Profile-pic.png')}
               style={styles.profileIcon}
             />
           </TouchableOpacity>
@@ -142,7 +147,7 @@ export default function HomeScreen({ route }) {
             <View style={styles.modalContent}>
               <TouchableOpacity onPress={toggleImageVisibility}>
                 <Image
-                  source={require('../assets/images/output-onlinepngtools (3).png')}
+                  source={require('../assets/images/Profile-pic.png')}
                   style={styles.largeProfileImage}
                 />
               </TouchableOpacity>
@@ -152,17 +157,30 @@ export default function HomeScreen({ route }) {
       )}
 
       <FlatList
+        ref={flatListRef} // Reference to FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
       />
 
+      {/* Home Button */}
       <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => console.log('Count:', itemCount)}
+        style={styles.homeButton}
+        onPress={handleHomeButtonPress} // Navigate to the first item card
       >
-        <Text style={styles.floatingButtonText}>{itemCount} Items Selected</Text>
+        <Image
+          source={require('../assets/images/home-icon.png')}
+          style={styles.homeIcon}
+        />
+      </TouchableOpacity>
+
+      {/* Items Selected Button */}
+      <TouchableOpacity
+        style={styles.itemsSelectedButton}
+        onPress={() => { }}
+      >
+        <Text style={styles.itemsSelectedButtonText}>{itemCount} Items Selected</Text>
       </TouchableOpacity>
     </View>
   );
@@ -270,14 +288,14 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   checkbox: {
-    width: 26,
-    height: 26,
-    borderWidth: 3,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
     borderColor: '#FF8C00',
-    backgroundColor: 'transparent',
-    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   checkboxSelected: {
     backgroundColor: '#FF8C00',
@@ -326,19 +344,43 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#FF8C00',
   },
-  floatingButton: {
+  homeButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    backgroundColor: '#FF8C00',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    elevation: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  homeIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#2D343C',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.7,
+    shadowRadius: 5,
+  },
+
+  itemsSelectedButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
     backgroundColor: '#FF8C00',
     paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 35,
+    paddingHorizontal: 20,
+    borderRadius: 50,
     elevation: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  floatingButtonText: {
-    color: '#fff',
-    fontSize: 18,
+  itemsSelectedButtonText: {
+    color: '#2D343C',
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });

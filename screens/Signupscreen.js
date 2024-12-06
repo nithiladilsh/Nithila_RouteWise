@@ -12,6 +12,9 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch } from 'react-redux';
+import { setUserCredentials } from './Store';
+
 
 export default function Signupscreen() {
   const [username, setUsername] = useState('');
@@ -45,6 +48,7 @@ export default function Signupscreen() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const validateEmail = (email) => {
@@ -57,9 +61,10 @@ export default function Signupscreen() {
     return phoneRegex.test(phone);
   };
 
+
   const handleSignUp = () => {
     let valid = true;
-  
+
     // Reset error and success messages
     setUsernameError('');
     setEmailError('');
@@ -71,7 +76,7 @@ export default function Signupscreen() {
     setPhoneSuccess('');
     setPasswordSuccess('');
     setConfirmPasswordSuccess('');
-  
+
     // Validate fields and set success/error messages
     if (!username) {
       setUsernameError('Username is required');
@@ -79,52 +84,53 @@ export default function Signupscreen() {
     } else {
       setUsernameSuccess('Valid username');
     }
-  
+
     if (!email || !validateEmail(email)) {
       setEmailError('Invalid email address');
       valid = false;
-    } if (!email){
-      setEmailError('Email is required')  
+    } if (!email) {
+      setEmailError('Email is required')
     } if (validateEmail(email)) {
       setEmailSuccess('Valid email address');
     }
-  
+
     if (!phone || !validatePhone(phone)) {
       setPhoneError('Invalid phone number');
       valid = false;
-    } if(!phone){
-        setPhoneError('Phone number is required');
-    } if(validatePhone(phone)) {
+    } if (!phone) {
+      setPhoneError('Phone number is required');
+    } if (validatePhone(phone)) {
       setPhoneSuccess('Valid phone number');
     }
 
-  
+
     if (!password) {
       setPasswordError('Password is required');
       valid = false;
-    }  if (password.length < 6 || password.length > 12) {
-        setPasswordError('Password must be between 6 and 12 characters');
-        valid = false;
-      } 
+    } if (password.length < 6 || password.length > 12) {
+      setPasswordError('Password must be between 6 and 12 characters');
+      valid = false;
+    }
     else {
       setPasswordSuccess('Valid password');
     }
-  
+
     // First, check password match before setting success/error messages
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       valid = false;
-    }  if (!password) {
-        setPasswordError('Please enter a password');
-        valid = false;
-    }    
+    } if (!password) {
+      setPasswordError('Please enter a password');
+      valid = false;
+    }
 
     if (valid) {
+      dispatch(setUserCredentials({ username, password }));
       Alert.alert('Success', 'Account created successfully!');
       navigation.navigate('Login');
     }
   };
-  
+
 
   return (
     <KeyboardAvoidingView
@@ -195,65 +201,56 @@ export default function Signupscreen() {
           />
         </View>
 
-{/* Password Input */}
-<View style={styles.inputContainer}>
+        {/* Password Input */}
+        <View style={styles.inputContainer}>
           {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
           {passwordSuccess && <Text style={styles.successText}>{passwordSuccess}</Text>}
-          <TextInput
-            style={[
-              styles.input,
-              isFocusedPassword && styles.inputFocused,
-              passwordError && styles.errorInput,
-            ]}
-            placeholder="Password"
-            placeholderTextColor="#ccc"
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            onFocus={() => setIsFocusedPassword(true)}
-            onBlur={() => setIsFocusedPassword(false)}
-            secureTextEntry={!isPasswordVisible}
-          />
-          <TouchableOpacity
-            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-            style={styles.eyeIcon}
-          >
-            <Icon
-              name={isPasswordVisible ? 'visibility-off' : 'visibility'}
-              size={24}
-              color="#ccc"
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[
+                styles.input,
+                isFocusedPassword && styles.inputFocused,
+                passwordError && styles.errorInput,
+              ]}
+              placeholder="Password"
+              placeholderTextColor="#ccc"
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              onFocus={() => setIsFocusedPassword(true)}
+              onBlur={() => setIsFocusedPassword(false)}
+              secureTextEntry={!isPasswordVisible}
             />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIcon}>
+              <Icon name={isPasswordVisible ? 'visibility-off' : 'visibility'} size={24} color="#ccc" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Confirm Password Input */}
         <View style={styles.inputContainer}>
           {confirmPasswordError && <Text style={styles.errorText}>{confirmPasswordError}</Text>}
           {confirmPasswordSuccess && <Text style={styles.successText}>{confirmPasswordSuccess}</Text>}
-          <TextInput
-            style={[
-              styles.input,
-              isFocusedConfirmPassword && styles.inputFocused,
-              confirmPasswordError && styles.errorInput,
-            ]}
-            placeholder="Confirm Password"
-            placeholderTextColor="#ccc"
-            onChangeText={(text) => setConfirmPassword(text)}
-            value={confirmPassword}
-            onFocus={() => setIsFocusedConfirmPassword(true)}
-            onBlur={() => setIsFocusedConfirmPassword(false)}
-            secureTextEntry={!isConfirmPasswordVisible}
-          />
-          <TouchableOpacity
-            onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
-            style={styles.eyeIcon}
-          >
-            <Icon
-              name={isConfirmPasswordVisible ? 'visibility-off' : 'visibility'}
-              size={24}
-              color="#ccc"
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[
+                styles.input,
+                isFocusedConfirmPassword && styles.inputFocused,
+                confirmPasswordError && styles.errorInput,
+              ]}
+              placeholder="Confirm Password"
+              placeholderTextColor="#ccc"
+              onChangeText={(text) => setConfirmPassword(text)}
+              value={confirmPassword}
+              onFocus={() => setIsFocusedConfirmPassword(true)}
+              onBlur={() => setIsFocusedConfirmPassword(false)}
+              secureTextEntry={!isConfirmPasswordVisible}
             />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)} style={styles.eyeIcon}>
+              <Icon name={isConfirmPasswordVisible ? 'visibility-off' : 'visibility'} size={24} color="#ccc" />
+            </TouchableOpacity>
+          </View>
         </View>
+
 
 
 
@@ -280,91 +277,95 @@ export default function Signupscreen() {
 
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#2D343C',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-    },
-    keyboardContainer: {
-      flex: 1,
-      backgroundColor: '#2D343C',
-    },
-    scrollContainer: {
-      flexGrow: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingBottom: 20, // Add space at the bottom to prevent input fields from being too close to the keyboard
-    },
-    title: {
-      fontSize: 40,
-      fontWeight: 'bold',
-      color: '#FFFFFF',
-      marginBottom: 30,
-      letterSpacing: 1,
-    },
-    inputContainer: {
-      width: '90%',
-      marginBottom: 20,
-      position: 'relative',
-    },
-    input: {
-      height: 50,
-      backgroundColor: '#40444F',
-      borderRadius: 8,
-      paddingHorizontal: 15,
-      paddingRight: 40,
-      fontSize: 16,
-      color: '#fff',
-      borderWidth: 1,
-      borderColor: '#40444F',
-      flex: 1,
-    },
-    inputFocused: {
-      borderColor: '#FF8C00',
-    },
-    errorInput: {
-      borderColor: '#FF5252', // Red border for error
-    },
-    eyeIcon: {
-        position: 'absolute',
-        right: 10,
-        top: '50%',
-        transform: [{ translateY: -12 }],
-      },
-
-    button: {
-      width: '90%',
-      height: 50,
-      backgroundColor: '#FF8C00',
-      borderRadius: 8,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 10,
-    },
-    buttonText: {
-      color: '#FFFFFF',
-      fontSize: 18,
-      fontWeight: 'bold',
-    },
-    footerText: {
-      marginTop: 20,
-      color: '#FFFFFF',
-      fontSize: 14,
-    },
-    loginText: {
-      color: '#FF8C00',
-    },
-    errorText: {
-      color: '#FF5252', // Red color for error messages
-      fontSize: 14,
-      marginBottom: 5,
-    },
-    successText: {
-        color: '#28a745', // Green color for success messages
-        fontSize: 14,
-        marginBottom: 5,
-    },
-  });
-  
+  container: {
+    flex: 1,
+    backgroundColor: '#2D343C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  keyboardContainer: {
+    flex: 1,
+    backgroundColor: '#2D343C',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 20, // Add space at the bottom to prevent input fields from being too close to the keyboard
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 30,
+    letterSpacing: 1,
+  },
+  inputContainer: {
+    width: '90%',
+    marginBottom: 20,
+    position: 'relative',
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center', // Align text and icon horizontally
+    position: 'relative', // To position the eye icon
+  },
+  input: {
+    height: 50,
+    backgroundColor: '#40444F',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingRight: 40,
+    fontSize: 16,
+    color: '#fff',
+    borderWidth: 1,
+    borderColor: '#40444F',
+    flex: 1,
+  },
+  inputFocused: {
+    borderColor: '#FF8C00',
+  },
+  errorInput: {
+    borderColor: '#FF5252', // Red border for error
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -12 }],
+    zIndex: 1, // Ensure the icon is always above other elements
+  },
+  button: {
+    width: '90%',
+    height: 50,
+    backgroundColor: '#FF8C00',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  footerText: {
+    marginTop: 20,
+    color: '#FFFFFF',
+    fontSize: 14,
+  },
+  loginText: {
+    color: '#FF8C00',
+  },
+  errorText: {
+    color: '#FF5252', // Red color for error messages
+    fontSize: 14,
+    marginBottom: 5,
+  },
+  successText: {
+    color: '#28a745', // Green color for success messages
+    fontSize: 14,
+    marginBottom: 5,
+  },
+});

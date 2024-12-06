@@ -13,6 +13,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the eye icon
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserCredentials, setAuthenticationStatus } from './Store';
+
+
+
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -21,16 +26,24 @@ export default function LoginScreen() {
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State to toggle password visibility
+
+  const dispatch = useDispatch();
   const navigation = useNavigation(); // For navigation between screens
 
+
+  // Get stored credentials from Redux store
+  const { username: storedUsername, password: storedPassword } = useSelector((state) => state.auth);
+
   const handleLogin = () => {
-    if (username === 'Nithila' && password === 'nithila123') {
-      setErrorMessage('');
-      navigation.navigate('Home', { username: username });  // Navigate to Home screen after successful login
+    // Check if entered username and password match the stored credentials
+    if (username === storedUsername && password === storedPassword) {
+      dispatch(setAuthenticationStatus(true)); // Set the user as authenticated
+      navigation.navigate('Home', { username: username }); // Navigate to Home screen
     } else {
       setErrorMessage('Invalid username or password');
     }
   };
+
 
   return (
     <KeyboardAvoidingView

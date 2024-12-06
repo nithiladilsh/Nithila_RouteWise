@@ -13,13 +13,39 @@ const itemCountSlice = createSlice({
   },
 });
 
-// Export the action to update the item count
+// Create a slice for managing user authentication
+const authSlice = createSlice({
+  name: 'auth',
+  initialState: {
+    username: '',
+    password: '',
+    isAuthenticated: false,
+  },
+  reducers: {
+    setUserCredentials: (state, action) => {
+      state.username = action.payload.username;
+      state.password = action.payload.password;
+    },
+    setAuthenticationStatus: (state, action) => {
+      state.isAuthenticated = action.payload;
+    },
+    logout: (state) => {
+      state.username = '';
+      state.password = '';
+      state.isAuthenticated = false;
+    },
+  },
+});
+
+// Export the actions from the slices
 export const { setItemCount } = itemCountSlice.actions;
+export const { setUserCredentials, setAuthenticationStatus, logout } = authSlice.actions;
 
 // Configure the Redux store
 const store = configureStore({
   reducer: {
-    itemCount: itemCountSlice.reducer, // Add the itemCount slice to the Redux store
+    itemCount: itemCountSlice.reducer,
+    auth: authSlice.reducer, // Add the auth slice to the Redux store
   },
 });
 
