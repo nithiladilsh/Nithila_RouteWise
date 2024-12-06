@@ -35,6 +35,12 @@ export default function LoginScreen() {
   const { username: storedUsername, password: storedPassword } = useSelector((state) => state.auth);
 
   const handleLogin = () => {
+    // Check if username or password is empty
+    if (!username || !password) {
+      setErrorMessage('Please enter both username and password');
+      return; // Stop further execution
+    }
+  
     // Check if entered username and password match the stored credentials
     if (username === storedUsername && password === storedPassword) {
       dispatch(setAuthenticationStatus(true)); // Set the user as authenticated
@@ -43,6 +49,7 @@ export default function LoginScreen() {
       setErrorMessage('Invalid username or password');
     }
   };
+  
 
 
   return (
