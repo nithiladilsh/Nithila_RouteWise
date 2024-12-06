@@ -36,9 +36,15 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     // Check if username or password is empty
-    if (!username || !password) {
+    if (!username && !password) {
       setErrorMessage('Please enter both username and password');
-      return; // Stop further execution
+      return;
+    } else if (username && !password){
+      setErrorMessage('Please enter the password');
+      return;
+    }else if (!username && password){
+      setErrorMessage('Please enter the username');
+      return;
     }
   
     // Check if entered username and password match the stored credentials
